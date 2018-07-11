@@ -7,16 +7,16 @@ class FormValidator {
 			this.form = form;
 		}
 
-		this.attribs = [
-			"required",
-			"range",
-			"min",
-			"max",
-			"length",
-			"minlength",
-			"maxlength",
-			"pattern",
-		];
+		this.attribs = {
+			required: "required",
+			range: "range",
+			min: "min",
+			max: "max",
+			length: "length",
+			minlength: "minlength",
+			maxlength: "maxlength",
+			pattern: "pattern",
+        };
 
 		this.types = [
 			"email",
@@ -371,8 +371,8 @@ class FormValidator {
 
 	getElementCheckInputAttrs(element) {
 		let attrsAndValue = [];
-		this.attribs.forEach((attribute) => {
-			if (element.hasAttribute(attribute)) {
+		Object.keys(this.attribs).forEach((attribute) => {
+			if (element.hasAttribute(this.attribs[attribute])) {
 				attrsAndValue.push({
 					name: attribute,
 					value: element.getAttribute(attribute),
