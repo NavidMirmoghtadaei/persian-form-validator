@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- Meta, title, CSS, favicons, etc. -->
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+        <style>
+            .container {
+                margin-top: 100px;
+            }
+        </style>
+        <script src="../src/form-validator.js"></script>
+    </head>
+    <body>
+        <div class="container" dir="rtl">
+            <form validate>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">required</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">range</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" range="[5:20]">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">min</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" min="5">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">max</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" max="20">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">length</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" length="[6:10]">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">minlength</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" minlength="6">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">maxlength</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" maxlength="10">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">type email</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" type="email">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">type url</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" type="url">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">type float</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" type="float">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">type integer</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" type="integer">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">type digits</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" type="digits">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">type alphanum</label>
+                    <div class="col-sm-10">
+                    <input class="form-control" type="alphanum">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <script>
+            const validator = new FormValidator("form[validate]")
+        </script>
+    </body>
+</html>

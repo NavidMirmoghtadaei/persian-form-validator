@@ -30,9 +30,9 @@ class FormValidator {
 		this.typesRegex = {
 			email: new RegExp("^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$","i"),
 			url: new RegExp(`^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$`, "i"),
-			float: /^(\+|\-)?\d+(\.\d+)?$/,
-			integer: /^(\+|\-)?\d+$/,
-			digits: new RegExp("^\d$"),
+            float: new RegExp("^(\\+|\\-)?\\d+(\\.\\d+)?$"),
+			integer: new RegExp("^(\\+|\\-)?\\d+$"),
+			digits: new RegExp("^\\d$"),
 			alphanum: new RegExp("^[a-z]+$", "i"),
 		};
 
@@ -42,7 +42,7 @@ class FormValidator {
 				url: "این مقدار باید یک آدرس معتبر باشد",
 				float: "این مقدار باید یک عدد معتبر باشد",
 				integer: "این مقدار باید یک عدد صحیح معتبر باشد",
-				digits: "این مقدار باید یک عدد باشد",
+				digits: "این مقدار باید یک رقم باشد",
 				alphanum: "این مقدار باید حروف الفبا باشد",
 			},
 			required: "این مقدار باید وارد شود",
@@ -217,13 +217,13 @@ class FormValidator {
 		if (/^((\+|\-)?\d+(\.\d+)?)?$/.test(this.currentElement.value) === false) {
 			result = {
 				flag: false,
-				error: this.messages["type"]["number"],
+				error: this.messages["type"]["float"],
 			}
 			return result;
 		}
 		const range = attribute['value'].match(/\d+(\.\d+)?/g);
 		const min = Number(range[0]);
-		const max = Number(range[1]);
+        const max = Number(range[1]);
 		const inputValue = Number(this.currentElement.value === "" ? max : this.currentElement.value);
 		if (min <= inputValue && max >= inputValue) {
 			result['flag'] = true;
@@ -232,7 +232,7 @@ class FormValidator {
 		const minMax = [min, max];
 		const error = this.messages[attribute['name']].replace(/%s/g, () => {
 			return minMax.shift();
-		});
+        });
 		result = {
 			flag: false,
 			error: error,
@@ -245,7 +245,7 @@ class FormValidator {
 		if (/^((\+|\-)?\d+(\.\d+)?)?$/.test(this.currentElement.value) === false) {
 			result = {
 				flag: false,
-				error: this.messages["type"]["number"],
+				error: this.messages["type"]["float"],
 			}
 			return result;
 		}
@@ -267,7 +267,7 @@ class FormValidator {
 		if (/^((\+|\-)?\d+(\.\d+)?)?$/g.test(this.currentElement.value) === false) {
 			result = {
 				flag: false,
-				error: this.messages["type"]["number"],
+				error: this.messages["type"]["float"],
 			}
 			return result;
 		}
