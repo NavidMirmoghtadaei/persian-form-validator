@@ -76,12 +76,17 @@ class FormValidator {
 	init() {
 		this.createErrorClasses();
 		this.form.querySelectorAll("textarea,input,select").forEach((element, index) => {
-			element.insertAdjacentHTML('afterend', `<div id="validator-error-${index.toString()}" class="${this.errorStyles.errorDiv.className}" style="display:none;"></div>`);
+            const errorDiv = document.createElement('div');
+            errorDiv.id = `validator-error-${index.toString()}`;
+            errorDiv.className = this.errorStyles.errorDiv.className;
+            errorDiv.style.display = "none";
+			element.insertAdjacentElement('afterend', errorDiv);
 			this.inputs[index] = {
 				attributes: this.getElementCheckInputAttrs(element),
 				type: this.getElementType(element),
-				element: element,
-			};
+                element: element,
+                errorDiv: errorDiv,
+            };
 			element.oninput = (event) => {
 				this.inputValidate(event.target, index);
 			}
@@ -108,8 +113,7 @@ class FormValidator {
 		let flag = true;
 		for (const i of Object.keys(this.inputs)) {
 			this.currentElement = this.inputs[i].element;
-			const idd = "#validator-error-" + i.toString();
-			const elementErrorDiv = (this.form).querySelector(idd);
+			const elementErrorDiv = this.inputs[i].errorDiv;
 			let result;
 			let thisInputFlag = true;
 			for (const attribute of this.inputs[i].attributes) {
@@ -145,8 +149,7 @@ class FormValidator {
 	}
 
 	inputValidate(element, i) {
-		const idd = "#validator-error-" + i.toString();
-		const elementErrorDiv = (this.form).querySelector(idd);
+		const elementErrorDiv = this.inputs[i].errorDiv;
 		this.currentElement = element;
 		let result;
 		for (const attribute of this.inputs[i].attributes) {
