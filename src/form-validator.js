@@ -15,7 +15,8 @@ class FormValidator {
 			length: "length",
 			minlength: "minlength",
 			maxlength: "maxlength",
-			pattern: "pattern",
+            pattern: "pattern",
+            type: "type",
         };
 
 		this.types = {
@@ -74,6 +75,7 @@ class FormValidator {
 	}
 
 	init() {
+        this.form.validator = this;
 		this.createErrorClasses();
 		this.form.querySelectorAll("textarea,input,select").forEach((element, index) => {
             const errorDiv = document.createElement('div');
@@ -83,7 +85,6 @@ class FormValidator {
 			element.insertAdjacentElement('afterend', errorDiv);
 			this.inputs[index] = {
 				attributes: this.getElementCheckInputAttrs(element),
-				type: this.getElementType(element),
                 element: element,
                 errorDiv: errorDiv,
             };
@@ -132,16 +133,6 @@ class FormValidator {
 			if (thisInputFlag === false) {
 				continue;
 			}
-			const typeValidateResult = this.typeValidate(this.inputs[i].type);
-			if (typeValidateResult.flag === false) {
-				elementErrorDiv.style.display = "block";
-				elementErrorDiv.innerText = typeValidateResult.error;
-				flag = false;
-				if (this.currentElement.className.search(this.errorStyles.input.className) === -1) {
-					this.currentElement.className += ` ${this.errorStyles.input.className}`
-				}
-				continue;
-			}
 			elementErrorDiv.style.display = "none";
 			this.currentElement.className = this.currentElement.className.replace(this.errorStyles.input.className, "");
 		}
@@ -159,12 +150,6 @@ class FormValidator {
 				elementErrorDiv.innerText = result.error;
 				return;
 			}
-		}
-		const typeValidateResult = this.typeValidate(this.inputs[i].type);
-		if (typeValidateResult.flag === false) {
-			elementErrorDiv.style.display = "block";
-			elementErrorDiv.innerText = typeValidateResult.error;
-			return;
 		}
 		elementErrorDiv.style.display = "none";
 		this.currentElement.className = this.currentElement.className.replace(this.errorStyles.input.className, "");
@@ -197,7 +182,9 @@ class FormValidator {
 				break;
 			case 'pattern':
 				result = this.validatePattern(attribute);
-				break;
+                break;
+            case 'type':
+                result = this.validateType(attribute);
 		}
 		return result;
 	}
@@ -355,8 +342,9 @@ class FormValidator {
 		return result;
 	}
 
-	typeValidate(type) {
-		let result = {};
+	validateType(attribute) {
+        let result = {};
+        const type = this.getElementType(attribute.value);
 		result.flag = true;
 		if (Object.keys(this.types).includes(type) === false) {
 			return result;
@@ -385,8 +373,10 @@ class FormValidator {
 		return attrsAndValue;
 	}
 
-	getElementType(element) {
-        let elementType = element.getAttribute("type");
+	getElementType(elementType) {
+        if (elementType === null) {
+            return "not supported";
+        }
         const typeNames = Object.keys(this.types);
         for (const name of typeNames) {
             if (this.types[name] === elementType) {
