@@ -15,9 +15,9 @@ class FormValidator {
 			length: "length",
 			minlength: "minlength",
 			maxlength: "maxlength",
-            pattern: "pattern",
-            type: "type",
-        };
+			pattern: "pattern",
+			type: "type",
+		};
 
 		this.types = {
 			email: "email",
@@ -26,12 +26,12 @@ class FormValidator {
 			integer: "integer",
 			digits: "digits",
 			alphanum: "alphanum",
-        };
+		};
 
 		this.typesRegex = {
 			email: new RegExp("^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$","i"),
 			url: new RegExp(`^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$`, "i"),
-            float: new RegExp("^(\\+|\\-)?\\d+(\\.\\d+)?$"),
+			float: new RegExp("^(\\+|\\-)?\\d+(\\.\\d+)?$"),
 			integer: new RegExp("^(\\+|\\-)?\\d+$"),
 			digits: new RegExp("^\\d$"),
 			alphanum: new RegExp("^[a-z]+$", "i"),
@@ -48,8 +48,8 @@ class FormValidator {
 			},
 			required: "این مقدار باید وارد شود",
 			pattern: "این مقدار به نظر می رسد نامعتبر است",
-			min: "این مقدیر باید بزرگتر با مساوی %s باشد",
-			max: "این مقدار باید کمتر و یا مساوی %s باشد",
+			min: "این مقدار باید بزرگتر یا مساوی %s باشد",
+			max: "این مقدار باید کوچکتر و یا مساوی %s باشد",
 			range: "این مقدار باید بین %s و %s باشد",
 			length: "این مقدار نامعتبر است و باید بین %s و %s باشد",
 			minlength: "این مقدار بیش از حد کوتاه است. باید %s کاراکتر یا بیشتر باشد.",
@@ -75,21 +75,21 @@ class FormValidator {
 	}
 
 	init() {
-        this.form.validator = this;
+		this.form.validator = this;
 		this.createErrorClasses();
 		this.form.querySelectorAll("textarea,input,select").forEach((element, index) => {
-            const errorDiv = document.createElement('div');
-            errorDiv.id = `validator-error-${index.toString()}`;
-            errorDiv.className = this.errorStyles.errorDiv.className;
-            errorDiv.style.display = "none";
+			const errorDiv = document.createElement('div');
+			errorDiv.id = `validator-error-${index.toString()}`;
+			errorDiv.className = this.errorStyles.errorDiv.className;
+			errorDiv.style.display = "none";
 			element.insertAdjacentElement('afterend', errorDiv);
 			this.inputs[index] = {
 				attributes: this.getElementCheckInputAttrs(element),
-                element: element,
-                errorDiv: errorDiv,
-            };
+				element: element,
+				errorDiv: errorDiv,
+			};
 			element.oninput = (event) => {
-				this.inputValidate(event.target, index);
+				this.inputValidateEvent(event.target, index);
 			}
 		});
 	}
@@ -112,25 +112,17 @@ class FormValidator {
 
 	isValid() {
 		let flag = true;
-		for (const i of Object.keys(this.inputs)) {
-			this.currentElement = this.inputs[i].element;
-			const elementErrorDiv = this.inputs[i].errorDiv;
-			let result;
-			let thisInputFlag = true;
-			for (const attribute of this.inputs[i].attributes) {
-				result = this.attributeValidate(attribute);
-				if (result.flag === false) {
-					elementErrorDiv.style.display = "block";
-					elementErrorDiv.innerText = result.error;
-					if (this.currentElement.className.search(this.errorStyles.input.className) === -1) {
-						this.currentElement.className += ` ${this.errorStyles.input.className}`
-					}
-					flag = false;
-					thisInputFlag = false;
-					break;
+		for (const inputIndex of Object.keys(this.inputs)) {
+			this.currentElement = this.inputs[inputIndex].element;
+			const elementErrorDiv = this.inputs[inputIndex].errorDiv;
+			let result = this.inputValidate(inputIndex);
+			if (result.flag === false) {
+				elementErrorDiv.style.display = "block";
+				elementErrorDiv.innerText = result.error;
+				if (this.currentElement.className.search(this.errorStyles.input.className) === -1) {
+					this.currentElement.className += ` ${this.errorStyles.input.className}`
 				}
-			}
-			if (thisInputFlag === false) {
+				flag = false;
 				continue;
 			}
 			elementErrorDiv.style.display = "none";
@@ -139,20 +131,28 @@ class FormValidator {
 		return flag;
 	}
 
-	inputValidate(element, i) {
-		const elementErrorDiv = this.inputs[i].errorDiv;
+	inputValidateEvent(element, inputIndex) {
+		const elementErrorDiv = this.inputs[inputIndex].errorDiv;
 		this.currentElement = element;
-		let result;
-		for (const attribute of this.inputs[i].attributes) {
-			result = this.attributeValidate(attribute);
-			if (result.flag === false) {
-				elementErrorDiv.style.display = "block";
-				elementErrorDiv.innerText = result.error;
-				return;
-			}
+		let result = this.inputValidate(inputIndex);
+		if (result.flag === false) {
+			elementErrorDiv.style.display = "block";
+			elementErrorDiv.innerText = result.error;
+			return;
 		}
 		elementErrorDiv.style.display = "none";
 		this.currentElement.className = this.currentElement.className.replace(this.errorStyles.input.className, "");
+	}
+
+	inputValidate(inputIndex) {
+		let result = { flag: true, };
+		for (const attribute of this.inputs[inputIndex].attributes) {
+			result = this.attributeValidate(attribute);
+			if (result.flag === false) {
+				return result;
+			}
+		}
+		return result;
 	}
 
 	attributeValidate(attribute) {
@@ -182,9 +182,10 @@ class FormValidator {
 				break;
 			case 'pattern':
 				result = this.validatePattern(attribute);
-                break;
-            case 'type':
-                result = this.validateType(attribute);
+				break;
+			case 'type':
+				result = this.validateType(attribute);
+				break;
 		}
 		return result;
 	}
@@ -213,7 +214,7 @@ class FormValidator {
 		}
 		const range = attribute.value.match(/\d+(\.\d+)?/g);
 		const min = Number(range[0]);
-        const max = Number(range[1]);
+		const max = Number(range[1]);
 		const inputValue = Number(this.currentElement.value === "" ? max : this.currentElement.value);
 		if (min <= inputValue && max >= inputValue) {
 			result.flag = true;
@@ -222,7 +223,7 @@ class FormValidator {
 		const minMax = [min, max];
 		const error = this.messages[attribute.name].replace(/%s/g, () => {
 			return minMax.shift();
-        });
+		});
 		result = {
 			flag: false,
 			error: error,
@@ -343,8 +344,8 @@ class FormValidator {
 	}
 
 	validateType(attribute) {
-        let result = {};
-        const type = this.getElementType(attribute.value);
+		let result = {};
+		const type = this.getElementType(attribute.value);
 		result.flag = true;
 		if (Object.keys(this.types).includes(type) === false) {
 			return result;
@@ -374,15 +375,15 @@ class FormValidator {
 	}
 
 	getElementType(elementType) {
-        if (elementType === null) {
-            return "not supported";
-        }
-        const typeNames = Object.keys(this.types);
-        for (const name of typeNames) {
-            if (this.types[name] === elementType) {
-                return name;
-            }
-        }
+		if (elementType === null) {
+			return "not supported";
+		}
+		const typeNames = Object.keys(this.types);
+		for (const name of typeNames) {
+			if (this.types[name] === elementType) {
+				return name;
+			}
+		}
 		return "not supported";
 	}
 
