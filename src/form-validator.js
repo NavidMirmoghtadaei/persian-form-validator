@@ -69,7 +69,7 @@ class FormValidator {
 
 		this.inputs = {};
 
-		this.currentElement = null;
+		this.currentElementValue = null;
 
 		this.init();
 	}
@@ -113,27 +113,28 @@ class FormValidator {
 	isValid() {
 		let flag = true;
 		for (const inputIndex of Object.keys(this.inputs)) {
-			this.currentElement = this.inputs[inputIndex].element;
+			const element = this.inputs[inputIndex].element;
+			this.currentElementValue = element.value;
 			const elementErrorDiv = this.inputs[inputIndex].errorDiv;
 			let result = this.inputValidate(inputIndex);
 			if (result.flag === false) {
 				elementErrorDiv.style.display = "block";
 				elementErrorDiv.innerText = result.error;
-				if (this.currentElement.className.search(this.errorStyles.input.className) === -1) {
-					this.currentElement.className += ` ${this.errorStyles.input.className}`
+				if (element.className.search(this.errorStyles.input.className) === -1) {
+					element.className += ` ${this.errorStyles.input.className}`;
 				}
 				flag = false;
 				continue;
 			}
 			elementErrorDiv.style.display = "none";
-			this.currentElement.className = this.currentElement.className.replace(this.errorStyles.input.className, "");
+			element.className = element.className.replace(this.errorStyles.input.className, "");
 		}
 		return flag;
 	}
 
 	inputValidateEvent(element, inputIndex) {
 		const elementErrorDiv = this.inputs[inputIndex].errorDiv;
-		this.currentElement = element;
+		this.currentElementValue = element.value;
 		let result = this.inputValidate(inputIndex);
 		if (result.flag === false) {
 			elementErrorDiv.style.display = "block";
@@ -141,7 +142,7 @@ class FormValidator {
 			return;
 		}
 		elementErrorDiv.style.display = "none";
-		this.currentElement.className = this.currentElement.className.replace(this.errorStyles.input.className, "");
+		element.className = element.className.replace(this.errorStyles.input.className, "");
 	}
 
 	inputValidate(inputIndex) {
@@ -192,7 +193,7 @@ class FormValidator {
 
 	validateRequired(attribute) {
 		let result = {};
-		if (this.currentElement.value === "") {
+		if (this.currentElementValue === "") {
 			result = {
 				flag: false,
 				error: this.messages[attribute.name]
@@ -205,7 +206,7 @@ class FormValidator {
 
 	validateRange(attribute) {
 		let result = {};
-		if (/^((\+|\-)?\d+(\.\d+)?)?$/.test(this.currentElement.value) === false) {
+		if (/^((\+|\-)?\d+(\.\d+)?)?$/.test(this.currentElementValue) === false) {
 			result = {
 				flag: false,
 				error: this.messages.type.float,
@@ -215,7 +216,7 @@ class FormValidator {
 		const range = attribute.value.match(/\d+(\.\d+)?/g);
 		const min = Number(range[0]);
 		const max = Number(range[1]);
-		const inputValue = Number(this.currentElement.value === "" ? max : this.currentElement.value);
+		const inputValue = Number(this.currentElementValue === "" ? max : this.currentElementValue);
 		if (min <= inputValue && max >= inputValue) {
 			result.flag = true;
 			return result;
@@ -233,7 +234,7 @@ class FormValidator {
 
 	validateMin(attribute) {
 		let result = {};
-		if (/^((\+|\-)?\d+(\.\d+)?)?$/.test(this.currentElement.value) === false) {
+		if (/^((\+|\-)?\d+(\.\d+)?)?$/.test(this.currentElementValue) === false) {
 			result = {
 				flag: false,
 				error: this.messages.type.float,
@@ -241,7 +242,7 @@ class FormValidator {
 			return result;
 		}
 		const min = Number(attribute.value);
-		const inputValue = Number(this.currentElement.value === "" ? min : this.currentElement.value);
+		const inputValue = Number(this.currentElementValue === "" ? min : this.currentElementValue);
 		if (min <= inputValue) {
 			result.flag = true;
 			return result;
@@ -255,7 +256,7 @@ class FormValidator {
 
 	validateMax(attribute) {
 		let result = {};
-		if (/^((\+|\-)?\d+(\.\d+)?)?$/g.test(this.currentElement.value) === false) {
+		if (/^((\+|\-)?\d+(\.\d+)?)?$/g.test(this.currentElementValue) === false) {
 			result = {
 				flag: false,
 				error: this.messages.type.float,
@@ -263,7 +264,7 @@ class FormValidator {
 			return result;
 		}
 		const max = Number(attribute.value);
-		const inputValue = Number(this.currentElement.value === "" ? max : this.currentElement.value);
+		const inputValue = Number(this.currentElementValue === "" ? max : this.currentElementValue);
 		if (max >= inputValue) {
 			result.flag = true;
 			return result;
@@ -278,7 +279,7 @@ class FormValidator {
 	validateLength(attribute) {
 		let result = {};
 		const range = attribute.value.match(/\d+/g);
-		const inputValue = this.currentElement.value;
+		const inputValue = this.currentElementValue;
 		const min = Number(range[0]);
 		const max = Number(range[1]);
 		if (min <= inputValue.length && max >= inputValue.length || inputValue.length === 0) {
@@ -298,7 +299,7 @@ class FormValidator {
 
 	validateMinLength(attribute) {
 		let result = {};
-		const inputValue = this.currentElement.value;
+		const inputValue = this.currentElementValue;
 		const min = Number(attribute.value);
 		if (min <= inputValue.length || inputValue.length === 0) {
 			result.flag = true;
@@ -314,7 +315,7 @@ class FormValidator {
 	validateMaxLength(attribute) {
 		let result = {};
 		const max = Number(attribute.value);
-		const inputValue = this.currentElement.value;
+		const inputValue = this.currentElementValue;
 		if (max >= inputValue.length || inputValue.length === 0) {
 			result.flag = true;
 			return result;
@@ -332,7 +333,7 @@ class FormValidator {
 		const flags = regexString.replace(/.*\/([gimy]*)$/, '$1');
 		const pattern = regexString.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
 		const regex = new RegExp(pattern, flags);
-		if (regex.test(this.currentElement.value) === false) {
+		if (regex.test(this.currentElementValue) === false) {
 			result = {
 				flag: false,
 				error: this.messages[attribute.name],
@@ -350,8 +351,8 @@ class FormValidator {
 		if (Object.keys(this.types).includes(type) === false) {
 			return result;
 		}
-		if (this.typesRegex[type].test(this.currentElement.value) === false &&
-			this.currentElement.value !== "") {
+		if (this.typesRegex[type].test(this.currentElementValue) === false &&
+			this.currentElementValue !== "") {
 			result = {
 				flag: false,
 				error: this.messages.type[type],
