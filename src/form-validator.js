@@ -7,7 +7,7 @@ class FormValidator {
 			this.form = form;
 		}
 
-		this.attribs = {
+		this.attribs = FormValidator.attribs !== undefined ? FormValidator.attribs : {
 			required: "required",
 			range: "range",
 			min: "min",
@@ -19,7 +19,7 @@ class FormValidator {
 			type: "type",
 		};
 
-		this.types = {
+		this.types = FormValidator.types !== undefined ? FormValidator.types : {
 			email: "email",
 			url: "url",
 			float: "float",
@@ -28,7 +28,7 @@ class FormValidator {
 			alphanum: "alphanum",
 		};
 
-		this.typesRegex = {
+		this.typesRegex = FormValidator.typesRegex !== undefined ? FormValidator.typesRegex : {
 			email: new RegExp("^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$","i"),
 			url: new RegExp(`^(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$`, "i"),
 			float: new RegExp("^(\\+|\\-)?\\d+(\\.\\d+)?$"),
@@ -37,7 +37,7 @@ class FormValidator {
 			alphanum: new RegExp("^[a-z]+$", "i"),
 		};
 
-		this.messages = {
+		this.messages = FormValidator.messages !== undefined ? FormValidator.messages : {
 			type: {
 				email: "این مقدار باید یک ایمیل معتبر باشد",
 				url: "این مقدار باید یک آدرس معتبر باشد",
@@ -56,7 +56,7 @@ class FormValidator {
 			maxlength: "این مقدار بیش از حد طولانی است. باید %s کاراکتر یا کمتر باشد.",
 		};
 
-		this.errorStyles = {
+		this.errorStyles = FormValidator.errorStyles !== undefined ? FormValidator.errorStyles : {
 			input: {
 				className: "validator-input-error",
 				style: "background: #faedec;border: 1px solid #e85445;",
@@ -388,4 +388,11 @@ class FormValidator {
 		return "not supported";
 	}
 
+	static customise(variableName, newValue) {
+		if(!(["attribs", "types", "typesRegex", "messages", "errorStyles"].includes(variableName))){
+			return false;
+		}
+		FormValidator[variableName] = newValue;
+		return true;
+	}
 }
