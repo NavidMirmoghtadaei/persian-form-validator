@@ -103,6 +103,9 @@ class FormValidator {
 			element.oninput = (event) => {
 				this.inputValidateEvent(event.target, index);
 			}
+			element.onblur = (event) => {
+				this.inputValidateEvent(event.target, index);
+			}
 		}
 	}
 
