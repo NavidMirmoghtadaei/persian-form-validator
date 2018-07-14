@@ -81,10 +81,10 @@ class FormValidator {
         for (let index = 0; index < formInputs.length ; index++) {
             const element = formInputs[index];
 			const errorDiv = document.createElement('div');
-			errorDiv.id = `validator-error-${index.toString()}`;
+			errorDiv.id = `validator-error-${String(index)}`;
 			errorDiv.className = this.errorStyles.errorDiv.className;
-			errorDiv.style.display = "none";
-            element.insertAdjacentElement('afterend', errorDiv);
+            errorDiv.style.display = "none";
+            this.insertAfter(errorDiv, element);
 			this.inputs[index] = {
 				attributes: this.getElementCheckInputAttrs(element),
 				element: element,
@@ -406,5 +406,11 @@ class FormValidator {
             keys.push(key);
         }
         return keys;
+    }
+
+    insertAfter(newElement, element) {
+        const nextElement = element.nextSibling;
+        element.parentNode.insertBefore(newElement, nextElement);
+        return;
     }
 }
