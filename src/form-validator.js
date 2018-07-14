@@ -76,13 +76,15 @@ class FormValidator {
 
 	init() {
 		this.form.validator = this;
-		this.createErrorClasses();
-		this.form.querySelectorAll("textarea,input,select").forEach((element, index) => {
+        this.createErrorClasses();
+        const formInputs = this.form.querySelectorAll("textarea,input,select");
+        for (let index = 0; index < formInputs.length ; index++) {
+            const element = formInputs[index];
 			const errorDiv = document.createElement('div');
 			errorDiv.id = `validator-error-${index.toString()}`;
 			errorDiv.className = this.errorStyles.errorDiv.className;
 			errorDiv.style.display = "none";
-			element.insertAdjacentElement('afterend', errorDiv);
+            element.insertAdjacentElement('afterend', errorDiv);
 			this.inputs[index] = {
 				attributes: this.getElementCheckInputAttrs(element),
 				element: element,
@@ -90,8 +92,8 @@ class FormValidator {
 			};
 			element.oninput = (event) => {
 				this.inputValidateEvent(event.target, index);
-			}
-		});
+            }
+        }
 	}
 
 	createErrorClasses() {
@@ -111,8 +113,9 @@ class FormValidator {
 	}
 
 	isValid() {
-		let flag = true;
-		for (const inputIndex of Object.keys(this.inputs)) {
+        let flag = true;
+        const inputsKeys = this.ObjectKeys(this.inputs);
+		for (const inputIndex of inputsKeys) {
 			const element = this.inputs[inputIndex].element;
 			this.currentElementValue = element.value;
 			const elementErrorDiv = this.inputs[inputIndex].errorDiv;
@@ -348,7 +351,7 @@ class FormValidator {
 		let result = {};
 		const type = this.getElementType(attribute.value);
 		result.flag = true;
-		if (Object.keys(this.types).includes(type) === false) {
+		if (this.ObjectKeys(this.types).indexOf(type) === -1) {
 			return result;
 		}
 		if (this.typesRegex[type].test(this.currentElementValue) === false &&
@@ -363,15 +366,16 @@ class FormValidator {
 	}
 
 	getElementCheckInputAttrs(element) {
-		let attrsAndValue = [];
-		Object.keys(this.attribs).forEach((attribute) => {
+        let attrsAndValue = [];
+        const attributeNames = this.ObjectKeys(this.attribs);
+        for (const attribute of attributeNames) {
 			if (element.hasAttribute(this.attribs[attribute])) {
 				attrsAndValue.push({
 					name: attribute,
 					value: element.getAttribute(attribute),
 				});
 			}
-		});
+		}
 		return attrsAndValue;
 	}
 
@@ -379,7 +383,7 @@ class FormValidator {
 		if (elementType === null) {
 			return "not supported";
 		}
-		const typeNames = Object.keys(this.types);
+		const typeNames = this.ObjectKeys(this.types);
 		for (const name of typeNames) {
 			if (this.types[name] === elementType) {
 				return name;
@@ -389,10 +393,18 @@ class FormValidator {
 	}
 
 	static customise(variableName, newValue) {
-		if(!(["attribs", "types", "typesRegex", "messages", "errorStyles"].includes(variableName))){
+		if(["attribs", "types", "typesRegex", "messages", "errorStyles"].indexOf(variableName) === -1){
 			return false;
 		}
 		FormValidator[variableName] = newValue;
 		return true;
-	}
+    }
+    
+    ObjectKeys(dictionary) {
+        let keys = [];
+        for(const key in dictionary){
+            keys.push(key);
+        }
+        return keys;
+    }
 }
