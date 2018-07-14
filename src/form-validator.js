@@ -76,15 +76,18 @@ class FormValidator {
 
 	init() {
 		this.form.validator = this;
-        this.createErrorClasses();
-        const formInputs = this.form.querySelectorAll("textarea,input,select");
-        for (let index = 0; index < formInputs.length ; index++) {
-            const element = formInputs[index];
+		this.form.onsubmit = () => {
+			return this.isValid();
+		}
+		this.createErrorClasses();
+		const formInputs = this.form.querySelectorAll("textarea,input,select");
+		for (let index = 0; index < formInputs.length ; index++) {
+			const element = formInputs[index];
 			const errorDiv = document.createElement('div');
 			errorDiv.id = `validator-error-${String(index)}`;
 			errorDiv.className = this.errorStyles.errorDiv.className;
-            errorDiv.style.display = "none";
-            this.insertAfter(errorDiv, element);
+			errorDiv.style.display = "none";
+			this.insertAfter(errorDiv, element);
 			this.inputs[index] = {
 				attributes: this.getElementCheckInputAttrs(element),
 				element: element,
@@ -92,8 +95,8 @@ class FormValidator {
 			};
 			element.oninput = (event) => {
 				this.inputValidateEvent(event.target, index);
-            }
-        }
+			}
+		}
 	}
 
 	createErrorClasses() {
@@ -113,8 +116,8 @@ class FormValidator {
 	}
 
 	isValid() {
-        let flag = true;
-        const inputsKeys = this.ObjectKeys(this.inputs);
+		let flag = true;
+		const inputsKeys = this.ObjectKeys(this.inputs);
 		for (const inputIndex of inputsKeys) {
 			const element = this.inputs[inputIndex].element;
 			this.currentElementValue = element.value;
@@ -366,9 +369,9 @@ class FormValidator {
 	}
 
 	getElementCheckInputAttrs(element) {
-        let attrsAndValue = [];
-        const attributeNames = this.ObjectKeys(this.attribs);
-        for (const attribute of attributeNames) {
+		let attrsAndValue = [];
+		const attributeNames = this.ObjectKeys(this.attribs);
+		for (const attribute of attributeNames) {
 			if (element.hasAttribute(this.attribs[attribute])) {
 				attrsAndValue.push({
 					name: attribute,
@@ -398,19 +401,19 @@ class FormValidator {
 		}
 		FormValidator[variableName] = newValue;
 		return true;
-    }
-    
-    ObjectKeys(dictionary) {
-        let keys = [];
-        for(const key in dictionary){
-            keys.push(key);
-        }
-        return keys;
-    }
+	}
+	
+	ObjectKeys(dictionary) {
+		let keys = [];
+		for(const key in dictionary){
+			keys.push(key);
+		}
+		return keys;
+	}
 
-    insertAfter(newElement, element) {
-        const nextElement = element.nextSibling;
-        element.parentNode.insertBefore(newElement, nextElement);
-        return;
-    }
+	insertAfter(newElement, element) {
+		const nextElement = element.nextSibling;
+		element.parentNode.insertBefore(newElement, nextElement);
+		return;
+	}
 }
