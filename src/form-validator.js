@@ -1,3 +1,10 @@
+/*!
+ * persian-form-validator: Simple HTML form validator written in JavaScript, supports Persian language.
+ * (c) 2018 Navid Mirmoghtadaei
+ * MIT License
+ * https://github.com/NavidMirmoghtadaei/persian-form-validator
+ */
+
 class FormValidator {
 
 	constructor(formSelector = "form", form = undefined) {
